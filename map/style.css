@@ -1,0 +1,154 @@
+/* [Hussain] Site styling: dark theme, responsive grid, search dropdown */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+}
+
+a { color: #38bdf8; }
+
+header {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    text-align: center;
+}
+
+header h1 { color: #38bdf8; margin-bottom: 1rem; }
+
+/* ---- search ---- */
+.search-box {
+    position: relative;
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    background-color: #1e293b;
+    color: #f8fafc;
+    font-size: 1rem;
+}
+
+.search-box input:focus { outline: 2px solid #38bdf8; }
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.dropdown:empty { display: none; }
+
+.search-item {
+    display: block;
+    padding: 0.7rem;
+    color: #f8fafc;
+    text-decoration: none;
+    border-bottom: 1px solid #334155;
+}
+
+a.search-item:hover { background-color: #334155; }
+
+/* ---- home grid ---- */
+.artist-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.25rem;
+}
+
+.card {
+    background-color: #1e293b;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+.card:hover { transform: translateY(-4px); }
+.card img { width: 100%; border-radius: 6px; margin-bottom: 0.75rem; }
+.card h2 { margin-bottom: 0.5rem; }
+.card p { margin-bottom: 0.4rem; color: #cbd5e1; font-size: 0.95rem; }
+
+.btn {
+    display: inline-block;
+    margin-top: 0.6rem;
+    padding: 0.55rem 1rem;
+    background-color: #0284c7;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn:hover { background-color: #0369a1; }
+
+/* ---- artist page ---- */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #1e293b;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.artist-header { text-align: center; margin: 1rem 0 2rem; }
+.artist-header img { max-width: 260px; width: 100%; border-radius: 8px; margin-bottom: 1rem; }
+.artist-header h1 { color: #38bdf8; margin-bottom: 0.5rem; }
+
+section { margin-bottom: 2rem; }
+section h3 { color: #38bdf8; margin-bottom: 0.75rem; }
+section ul { padding-left: 1.25rem; }
+
+.timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.timeline-card {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.timeline-card h4 { margin-bottom: 0.5rem; }
+.timeline-card ul { list-style: none; padding: 0; color: #cbd5e1; }
+
+/* ---- error page ---- */
+.error-page { max-width: 540px; text-align: center; margin-top: 4rem; }
+.error-page h1 { font-size: 4rem; margin-bottom: 0.5rem; color: #f87171; }
+.error-page .error-code {
+    margin-bottom: 1rem;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+.error-page p { margin-bottom: 1rem; color: #e2e8f0; }
+.error-page .back-link { font-weight: 600; text-decoration: none; }
+.error-page .back-link:hover { text-decoration: underline; }

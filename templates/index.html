@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupie Trackers</title>
+    <link rel="stylesheet" href="/map/style.css">
+    <script src="/map/script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Groupie Trackers</h1>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search artists, members, locations..." autocomplete="off">
+            <div id="search-results" class="dropdown"></div>
+        </div>
+    </header>
+
+    <main class="artist-grid">
+        {{range .}}
+        <div class="card">
+            <img src="{{.Image}}" alt="{{.Name}}">
+            <h2>{{.Name}}</h2>
+            <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
+            <p><strong>Formed:</strong> {{.CreationDate}}</p>
+            <a href="/artist?id={{.ID}}" class="btn">View Tour Dates</a>
+        </div>
+        {{end}}
+    </main>
+</body>
+</html>

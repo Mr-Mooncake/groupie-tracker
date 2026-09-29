@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Artist.Name}} - Tour Details</title>
+    <link rel="stylesheet" href="/map/style.css">
+</head>
+<body>
+    <div class="container">
+        <a href="/">&larr; Back to Artists</a>
+
+        <div class="artist-header">
+            <img src="{{.Artist.Image}}" alt="{{.Artist.Name}}">
+            <h1>{{.Artist.Name}}</h1>
+            <p>Formed in {{.Artist.CreationDate}} | First Album: {{.Artist.FirstAlbum}}</p>
+        </div>
+
+        <section>
+            <h3>Band Members</h3>
+            <ul>
+                {{range .Artist.Members}}
+                <li>{{.}}</li>
+                {{end}}
+            </ul>
+        </section>
+
+        <section>
+            <h3>Concerts &amp; Locations</h3>
+            {{if .Relations}}
+            <div class="timeline">
+                {{range $location, $dates := .Relations}}
+                <div class="timeline-card">
+                    <h4>{{formatLocation $location}}</h4>
+                    <ul>
+                        {{range $dates}}
+                        <li>{{.}}</li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{end}}
+            </div>
+            {{else}}
+            <p>No concert data available.</p>
+            {{end}}
+        </section>
+    </div>
+</body>
+</html>
