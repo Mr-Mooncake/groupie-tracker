@@ -3,29 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Groupie Trackers</title>
+    <title>Groupie Tracker</title>
     <link rel="stylesheet" href="/map/style.css">
     <script src="/map/script.js" defer></script>
 </head>
 <body>
     <header>
-        <h1>Groupie Trackers</h1>
+        <h1>Groupie Tracker</h1>
+        <p>Explore bands, members, concert dates, and tour locations</p>
+
         <div class="search-box">
             <input type="text" id="search-input" placeholder="Search artists, members, locations..." autocomplete="off">
             <div id="search-results" class="dropdown"></div>
         </div>
     </header>
 
-    <main class="artist-grid">
-        {{range .}}
-        <div class="card">
-            <img src="{{.Image}}" alt="{{.Name}}">
-            <h2>{{.Name}}</h2>
-            <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
-            <p><strong>Formed:</strong> {{.CreationDate}}</p>
-            <a href="/artist?id={{.ID}}" class="btn">View Tour Dates</a>
+    <main>
+        <div class="artist-grid">
+            {{range .}}
+            <a href="/artist?id={{.ID}}" class="artist-card">
+                <div class="image-wrapper">
+                    <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">
+                </div>
+                <div class="card-info">
+                    <h2>{{.Name}}</h2>
+                </div>
+            </a>
+            {{else}}
+            <p>No artists found.</p>
+            {{end}}
         </div>
-        {{end}}
     </main>
+
+    <footer>
+        <p>&copy; Groupie Tracker Project</p>
+    </footer>
 </body>
 </html>

@@ -3,47 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Artist.Name}} - Tour Details</title>
+    <title>{{.Artist.Name}} - Groupie Tracker</title>
     <link rel="stylesheet" href="/map/style.css">
 </head>
 <body>
-    <div class="container">
-        <a href="/">&larr; Back to Artists</a>
+    <header>
+        <a href="/" class="back-link">&larr; Back to Artists</a>
+        <h1>{{.Artist.Name}}</h1>
+    </header>
 
-        <div class="artist-header">
+    <main class="artist-detail">
+        <!-- Sidebar containing artist metadata -->
+        <aside class="sidebar-card">
             <img src="{{.Artist.Image}}" alt="{{.Artist.Name}}">
-            <h1>{{.Artist.Name}}</h1>
-            <p>Formed in {{.Artist.CreationDate}} | First Album: {{.Artist.FirstAlbum}}</p>
-        </div>
 
-        <section>
-            <h3>Band Members</h3>
-            <ul>
-                {{range .Artist.Members}}
-                <li>{{.}}</li>
-                {{end}}
-            </ul>
-        </section>
+            <div class="meta-group">
+                <span class="meta-label">First Album</span>
+                <span class="meta-value">{{.Artist.FirstAlbum}}</span>
+            </div>
 
-        <section>
-            <h3>Concerts &amp; Locations</h3>
-            {{if .Relations}}
-            <div class="timeline">
+            <div class="meta-group">
+                <span class="meta-label">Creation Year</span>
+                <span class="meta-value">{{.Artist.CreationDate}}</span>
+            </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Band Members</span>
+                <div class="member-tags">
+                    {{range .Artist.Members}}
+                    <span class="tag">{{.}}</span>
+                    {{end}}
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main section containing location & date relations -->
+        <section class="tour-content">
+            <h2>Concerts &amp; Tour Locations</h2>
+            <div class="relation-grid">
                 {{range $location, $dates := .Relations}}
-                <div class="timeline-card">
-                    <h4>{{formatLocation $location}}</h4>
+                <div class="relation-card">
+                    <h4>📍 {{formatLocation $location}}</h4>
                     <ul>
                         {{range $dates}}
-                        <li>{{.}}</li>
+                        <li>📅 {{.}}</li>
                         {{end}}
                     </ul>
                 </div>
+                {{else}}
+                <p>No tour dates available.</p>
                 {{end}}
             </div>
-            {{else}}
-            <p>No concert data available.</p>
-            {{end}}
         </section>
-    </div>
+    </main>
+
+    <footer>
+        <p>&copy; Groupie Tracker Project</p>
+    </footer>
 </body>
 </html>

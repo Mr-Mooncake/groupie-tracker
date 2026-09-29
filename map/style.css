@@ -1,4 +1,4 @@
-/* [Hussain] Site styling: dark theme, responsive grid, search dropdown */
+/* Styles for the teammate's templates (artist-card, sidebar-card, relation-card, ...) */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -9,21 +9,48 @@
 body {
     background-color: #0f172a;
     color: #f8fafc;
-    padding: 2rem 1rem;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 a { color: #38bdf8; }
 
 header {
     max-width: 1100px;
-    margin: 0 auto 2rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1rem 1.5rem;
     text-align: center;
 }
 
-header h1 { color: #38bdf8; margin-bottom: 1rem; }
+header h1 { color: #38bdf8; margin-bottom: 0.5rem; }
+header p { color: #cbd5e1; margin-bottom: 1rem; }
 
-/* ---- search ---- */
+main {
+    flex: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+}
+
+footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+.back-link:hover { text-decoration: underline; }
+
+/* ---- live search ---- */
 .search-box {
     position: relative;
     max-width: 420px;
@@ -40,7 +67,6 @@ header h1 { color: #38bdf8; margin-bottom: 1rem; }
     color: #f8fafc;
     font-size: 1rem;
 }
-
 .search-box input:focus { outline: 2px solid #38bdf8; }
 
 .dropdown {
@@ -56,7 +82,6 @@ header h1 { color: #38bdf8; margin-bottom: 1rem; }
     max-height: 280px;
     overflow-y: auto;
 }
-
 .dropdown:empty { display: none; }
 
 .search-item {
@@ -66,81 +91,103 @@ header h1 { color: #38bdf8; margin-bottom: 1rem; }
     text-decoration: none;
     border-bottom: 1px solid #334155;
 }
-
 a.search-item:hover { background-color: #334155; }
 
-/* ---- home grid ---- */
+/* ---- home: artist grid ---- */
 .artist-grid {
-    max-width: 1100px;
-    margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.25rem;
 }
 
-.card {
+.artist-card {
+    display: block;
     background-color: #1e293b;
     border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s;
-}
-
-.card:hover { transform: translateY(-4px); }
-.card img { width: 100%; border-radius: 6px; margin-bottom: 0.75rem; }
-.card h2 { margin-bottom: 0.5rem; }
-.card p { margin-bottom: 0.4rem; color: #cbd5e1; font-size: 0.95rem; }
-
-.btn {
-    display: inline-block;
-    margin-top: 0.6rem;
-    padding: 0.55rem 1rem;
-    background-color: #0284c7;
-    color: #fff;
-    border-radius: 6px;
+    overflow: hidden;
     text-decoration: none;
-    font-weight: bold;
+    color: #f8fafc;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.artist-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 20px -3px rgba(56, 189, 248, 0.25);
 }
 
-.btn:hover { background-color: #0369a1; }
+.image-wrapper { aspect-ratio: 1 / 1; overflow: hidden; background: #0f172a; }
+.image-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.card-info { padding: 0.9rem; text-align: center; }
+.card-info h2 { font-size: 1.1rem; }
 
 /* ---- artist page ---- */
+.artist-detail {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.sidebar-card {
+    background-color: #1e293b;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+.sidebar-card img { width: 100%; border-radius: 6px; margin-bottom: 1rem; }
+
+.meta-group { margin-bottom: 1rem; }
+.meta-label {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.3rem;
+}
+.meta-value { font-size: 1.05rem; font-weight: 600; }
+
+.member-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tag {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.9rem;
+}
+
+.tour-content h2 { color: #38bdf8; margin-bottom: 1rem; }
+
+.relation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+.relation-card {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 1rem;
+}
+.relation-card h4 { margin-bottom: 0.6rem; }
+.relation-card ul { list-style: none; color: #cbd5e1; }
+.relation-card li { padding: 0.15rem 0; }
+
+@media (max-width: 760px) {
+    .artist-detail { grid-template-columns: 1fr; }
+}
+
+/* ---- error page ---- */
 .container {
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: 540px;
+    margin: 4rem auto;
     background-color: #1e293b;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
-
-.artist-header { text-align: center; margin: 1rem 0 2rem; }
-.artist-header img { max-width: 260px; width: 100%; border-radius: 8px; margin-bottom: 1rem; }
-.artist-header h1 { color: #38bdf8; margin-bottom: 0.5rem; }
-
-section { margin-bottom: 2rem; }
-section h3 { color: #38bdf8; margin-bottom: 0.75rem; }
-section ul { padding-left: 1.25rem; }
-
-.timeline {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-}
-
-.timeline-card {
-    background-color: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    padding: 1rem;
-}
-
-.timeline-card h4 { margin-bottom: 0.5rem; }
-.timeline-card ul { list-style: none; padding: 0; color: #cbd5e1; }
-
-/* ---- error page ---- */
-.error-page { max-width: 540px; text-align: center; margin-top: 4rem; }
+.error-page { text-align: center; }
 .error-page h1 { font-size: 4rem; margin-bottom: 0.5rem; color: #f87171; }
 .error-page .error-code {
     margin-bottom: 1rem;
@@ -150,5 +197,4 @@ section ul { padding-left: 1.25rem; }
     font-weight: 600;
 }
 .error-page p { margin-bottom: 1rem; color: #e2e8f0; }
-.error-page .back-link { font-weight: 600; text-decoration: none; }
-.error-page .back-link:hover { text-decoration: underline; }
+.error-page .back-link { margin-bottom: 0; }
