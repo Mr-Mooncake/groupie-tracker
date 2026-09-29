@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupie Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>Groupie Tracker</h1>
+        <p>Explore bands, members, concert dates, and tour locations</p>
+    </header>
+
+    <main>
+        <div class="artist-grid">
+            {{range .}}
+            <a href="/artist?id={{.ID}}" class="artist-card">
+                <div class="image-wrapper">
+                    <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">
+                </div>
+                <div class="card-info">
+                    <h2>{{.Name}}</h2>
+                </div>
+            </a>
+            {{else}}
+            <p>No artists found.</p>
+            {{end}}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Groupie Tracker Project</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Artist.Name}} - Groupie Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-link">&larr; Back to Artists</a>
+        <h1>{{.Artist.Name}}</h1>
+    </header>
+
+    <main class="artist-detail">
+        <!-- Sidebar containing artist metadata -->
+        <aside class="sidebar-card">
+            <img src="{{.Artist.Image}}" alt="{{.Artist.Name}}">
+            
+            <div class="meta-group">
+                <span class="meta-label">First Album</span>
+                <span class="meta-value">{{.Artist.FirstAlbum}}</span>
+            </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Creation Year</span>
+                <span class="meta-value">{{.Artist.CreationDate}}</span>
+            </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Band Members</span>
+                <div class="member-tags">
+                    {{range .Artist.Members}}
+                    <span class="tag">{{.}}</span>
+                    {{end}}
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main section containing location & date relations -->
+        <section class="tour-content">
+            <h2>Concerts & Tour Locations</h2>
+            <div class="relation-grid">
+                {{range $location, $dates := .Relations}}
+                <div class="relation-card">
+                    <h4>📍 {{$location}}</h4>
+                    <ul>
+                        {{range $dates}}
+                        <li>📅 {{.}}</li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{else}}
+                <p>No tour dates available.</p>
+                {{end}}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Groupie Tracker Project</p>
+    </footer>
+</body>
+</html>
