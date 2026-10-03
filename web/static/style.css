@@ -1,4 +1,6 @@
-/* Styles for the teammate's templates (artist-card, sidebar-card, relation-card, ...) */
+/* Placeholder styles for the templates (artist-card, sidebar-card, relation-card, ...).
+   Hussain: replace freely, but keep the .search-box / .dropdown / .search-item rules
+   so the live-search dropdown still works. */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -23,7 +25,6 @@ header {
     padding: 2rem 1rem 1.5rem;
     text-align: center;
 }
-
 header h1 { color: #38bdf8; margin-bottom: 0.5rem; }
 header p { color: #cbd5e1; margin-bottom: 1rem; }
 
@@ -57,7 +58,6 @@ footer {
     margin: 0 auto;
     text-align: left;
 }
-
 .search-box input {
     width: 100%;
     padding: 0.75rem;
@@ -99,7 +99,6 @@ a.search-item:hover { background-color: #334155; }
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.25rem;
 }
-
 .artist-card {
     display: block;
     background-color: #1e293b;
@@ -114,10 +113,8 @@ a.search-item:hover { background-color: #334155; }
     transform: translateY(-4px);
     box-shadow: 0 14px 20px -3px rgba(56, 189, 248, 0.25);
 }
-
 .image-wrapper { aspect-ratio: 1 / 1; overflow: hidden; background: #0f172a; }
 .image-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
 .card-info { padding: 0.9rem; text-align: center; }
 .card-info h2 { font-size: 1.1rem; }
 
@@ -128,7 +125,6 @@ a.search-item:hover { background-color: #334155; }
     gap: 1.5rem;
     align-items: start;
 }
-
 .sidebar-card {
     background-color: #1e293b;
     border-radius: 8px;
@@ -158,7 +154,6 @@ a.search-item:hover { background-color: #334155; }
 }
 
 .tour-content h2 { color: #38bdf8; margin-bottom: 1rem; }
-
 .relation-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -179,22 +174,17 @@ a.search-item:hover { background-color: #334155; }
 }
 
 /* ---- error page ---- */
-.container {
+body.error-page { justify-content: center; align-items: center; }
+.error-container {
     max-width: 540px;
-    margin: 4rem auto;
+    margin: 2rem 1rem;
     background-color: #1e293b;
     padding: 2rem;
     border-radius: 8px;
+    text-align: center;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
-.error-page { text-align: center; }
-.error-page h1 { font-size: 4rem; margin-bottom: 0.5rem; color: #f87171; }
-.error-page .error-code {
-    margin-bottom: 1rem;
-    color: #cbd5e1;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-}
-.error-page p { margin-bottom: 1rem; color: #e2e8f0; }
-.error-page .back-link { margin-bottom: 0; }
+.error-container h1 { font-size: 4rem; margin-bottom: 0.5rem; color: #f87171; }
+.error-container h2 { margin-bottom: 1rem; color: #e2e8f0; font-size: 1.2rem; }
+.error-container p { margin-bottom: 1rem; color: #cbd5e1; }
+.error-container .back-link { margin-bottom: 0; }

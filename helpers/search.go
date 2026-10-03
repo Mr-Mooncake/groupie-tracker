@@ -1,9 +1,10 @@
 package helpers
 
-// [Yasser] Client-server event: live search endpoint + data cache.
+// [Yasser] Live search: the browser asks /api/search?q=... and gets a JSON list back.
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"sort"
 	"strconv"
@@ -12,164 +13,114 @@ import (
 	"time"
 )
 
-const (
-	apiBase         = "https://groupietrackers.herokuapp.com/api"
-	maxSearchResult = 10
-	cacheTTL        = 10 * time.Minute
-)
-
-// SearchResult is one suggestion sent to the browser.
+// One suggestion in the dropdown (the json tags are the names JavaScript sees).
 type SearchResult struct {
 	Text string `json:"text"`
 	Type string `json:"type"`
 	ID   int    `json:"id"`
 }
 
-// ---------- cache ----------
+// Saved copy of the API data (a "cache"), so we don't call the API on every
+// keystroke. The mutex stops two requests from changing it at the same time.
+var (
+	mutex          sync.Mutex
+	savedArtists   []Artist
+	savedRelations []Relation
+	savedAt        time.Time
+)
 
-// dataCache keeps artists + relations in memory so we don't call the
-// remote API on every request. Safe for concurrent use.
-type dataCache struct {
-	mu        sync.Mutex
-	artists   []Artist
-	relations []Relation
-	fetchedAt time.Time
-	ttl       time.Duration
-	load      func() ([]Artist, []Relation, error)
-}
+// getData returns artists and relations, from memory when possible.
+func GetData() ([]Artist, []Relation, error) {
+	mutex.Lock()
+	defer mutex.Unlock() // "defer" = run this when the function ends
 
-func (c *dataCache) get() ([]Artist, []Relation, error) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	if c.artists != nil && time.Since(c.fetchedAt) < c.ttl {
-		return c.artists, c.relations, nil
+	if savedArtists != nil && time.Since(savedAt) < 10*time.Minute {
+		return savedArtists, savedRelations, nil // saved copy is still fresh
 	}
 
-	artists, relations, err := c.load()
-	if err != nil {
-		if c.artists != nil { // serve stale data rather than fail
-			return c.artists, c.relations, nil
+	artists, err1 := FetchAllArtists()
+	var index RelationIndex
+	err2 := FetchJSON(APIBaseURL+"/relation", &index)
+	if err1 != nil || err2 != nil {
+		if savedArtists != nil { // API is down: old data is better than nothing
+			return savedArtists, savedRelations, nil
 		}
-		return nil, nil, err
+		return nil, nil, errors.New("could not load data")
 	}
 
-	c.artists, c.relations, c.fetchedAt = artists, relations, time.Now()
-	return artists, relations, nil
+	savedArtists, savedRelations, savedAt = artists, index.Index, time.Now()
+	return savedArtists, savedRelations, nil
 }
 
-func loadFromAPI() ([]Artist, []Relation, error) {
-	var artists []Artist
-	if err := fetchJSON(apiBase+"/artists", &artists); err != nil {
-		return nil, nil, err
-	}
-	var idx RelationIndex
-	if err := fetchJSON(apiBase+"/relation", &idx); err != nil {
-		return nil, nil, err
-	}
-	return artists, idx.Index, nil
+// contains checks if text includes query, ignoring upper/lower case.
+func Contains(text, query string) bool {
+	return strings.Contains(strings.ToLower(text), query)
 }
 
-var searchCache = &dataCache{ttl: cacheTTL, load: loadFromAPI}
-
-// ---------- search logic (pure, easy to test) ----------
-
-// searchIndex returns up to limit suggestions, grouped by category so
-// artist-name matches come first.
-func searchIndex(query string, artists []Artist, relations []Relation, limit int) []SearchResult {
-	results := []SearchResult{}
-	q := strings.ToLower(strings.TrimSpace(query))
-	if q == "" {
+// search returns up to 10 results that match the query.
+func Search(query string, artists []Artist, relations []Relation) []SearchResult {
+	query = strings.ToLower(strings.TrimSpace(query))
+	results := []SearchResult{} // empty list, so JSON gives [] and not null
+	if query == "" {
 		return results
 	}
-
-	match := func(s string) bool { return strings.Contains(strings.ToLower(s), q) }
-	add := func(text, typ string, id int) bool {
-		results = append(results, SearchResult{Text: text, Type: typ, ID: id})
-		return len(results) >= limit
-	}
-
-	for _, a := range artists {
-		if match(a.Name) && add(a.Name+" (Artist)", "artist", a.ID) {
-			return results
+	for _, a := range artists { // 1. artist names
+		if Contains(a.Name, query) {
+			results = append(results, SearchResult{a.Name + " (Artist)", "artist", a.ID})
 		}
 	}
-	for _, a := range artists {
-		for _, m := range a.Members {
-			if match(m) && add(m+" - Member ("+a.Name+")", "member", a.ID) {
-				return results
+	for _, a := range artists { // 2. band members
+		for _, member := range a.Members {
+			if Contains(member, query) {
+				results = append(results, SearchResult{member + " - Member (" + a.Name + ")", "member", a.ID})
 			}
 		}
 	}
 
-	names := make(map[int]string, len(artists))
+	names := map[int]string{} // id -> artist name, needed for step 3
 	for _, a := range artists {
 		names[a.ID] = a.Name
 	}
-	for _, r := range relations {
-		name, ok := names[r.ID]
-		if !ok {
-			continue
+	for _, r := range relations { // 3. concert locations
+		var places []string
+		for place := range r.DatesLocations {
+			places = append(places, place)
 		}
-		keys := make([]string, 0, len(r.DatesLocations))
-		for k := range r.DatesLocations {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys) // deterministic order
-		for _, k := range keys {
-			pretty := FormatLocation(k)
-			if (match(pretty) || match(k)) && add(pretty+" - Location ("+name+")", "location", r.ID) {
-				return results
+		sort.Strings(places) // map order is random; sorting keeps results stable
+		for _, place := range places {
+			nice := FormatLocation(place) // "london-uk" -> "London, UK"
+			if Contains(nice, query) || Contains(place, query) {
+				results = append(results, SearchResult{nice + " - Location (" + names[r.ID] + ")", "location", r.ID})
 			}
 		}
 	}
-
-	for _, a := range artists {
-		if match(a.FirstAlbum) && add(a.FirstAlbum+" - First Album ("+a.Name+")", "firstAlbum", a.ID) {
-			return results
+	for _, a := range artists { // 4. first album date and creation year
+		year := strconv.Itoa(a.CreationDate) // number -> text
+		if Contains(a.FirstAlbum, query) {
+			results = append(results, SearchResult{a.FirstAlbum + " - First Album (" + a.Name + ")", "firstAlbum", a.ID})
+		}
+		if Contains(year, query) {
+			results = append(results, SearchResult{year + " - Created (" + a.Name + ")", "creationDate", a.ID})
 		}
 	}
-	for _, a := range artists {
-		year := strconv.Itoa(a.CreationDate)
-		if match(year) && add(year+" - Created ("+a.Name+")", "creationDate", a.ID) {
-			return results
-		}
+
+	if len(results) > 10 { // keep the dropdown short
+		results = results[:10]
 	}
 	return results
 }
 
-// ---------- HTTP handler ----------
-
-func writeJSONError(w http.ResponseWriter, status int, msg string) {
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{"error": msg})
-}
-
-func newSearchHandler(c func() *dataCache) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-		if r.Method != http.MethodGet {
-			w.Header().Set("Allow", http.MethodGet)
-			writeJSONError(w, http.StatusMethodNotAllowed, "method not allowed")
-			return
-		}
-
-		query := strings.TrimSpace(r.URL.Query().Get("q"))
-		if query == "" {
-			json.NewEncoder(w).Encode([]SearchResult{})
-			return
-		}
-
-		artists, relations, err := c().get()
-		if err != nil {
-			writeJSONError(w, http.StatusInternalServerError, "could not load data")
-			return
-		}
-
-		json.NewEncoder(w).Encode(searchIndex(query, artists, relations, maxSearchResult))
+// handleSearch answers GET /api/search?q=...
+func HandleSearch(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
+	artists, relations, err := GetData()
+	if err != nil {
+		http.Error(w, "could not load data", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Search(r.URL.Query().Get("q"), artists, relations))
 }
-
-// HandleSearch serves GET /api/search?q=...
-var HandleSearch = newSearchHandler(func() *dataCache { return searchCache })
