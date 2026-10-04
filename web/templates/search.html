@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - Groupie Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-link">&larr; Back to Artists</a>
+        <h1>Search</h1>
+        <form class="search-box" action="/search" method="GET">
+            <input type="text" name="q" value="{{.Query}}" placeholder="Search artists, members, locations..." autocomplete="off" required>
+            <button type="submit">Search</button>
+        </form>
+        <a href="/random" class="random-btn">🎲 Random Artist</a>
+    </header>
+
+    <main>
+        {{if not .Query}}
+        <p class="search-info">Type a band, member, location, date or year.</p>
+        {{else if .Results}}
+        <p class="search-info">{{len .Results}} result(s) for "{{.Query}}"</p>
+        <ul class="search-results">
+            {{range .Results}}
+            <li><a href="/artist?id={{.ID}}">{{.Text}}</a></li>
+            {{end}}
+        </ul>
+        {{else}}
+        <p class="search-info">No results found for "{{.Query}}".</p>
+        {{end}}
+    </main>
+
+    <footer>
+        <p>&copy; Yaser, Hashim, Hussain</p>
+    </footer>
+</body>
+</html>

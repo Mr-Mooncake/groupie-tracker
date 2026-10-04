@@ -1,9 +1,8 @@
 package helpers
 
-// [Yasser] Live search: the browser asks /api/search?q=... and gets a JSON list back.
+// [Yasser] Search: the browser submits a form to /search?q=... and gets a results page back.
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"sort"
@@ -13,15 +12,15 @@ import (
 	"time"
 )
 
-// One suggestion in the dropdown (the json tags are the names JavaScript sees).
+// One search result: the text to show, what kind it is, and the band's id (for the link).
 type SearchResult struct {
-	Text string `json:"text"`
-	Type string `json:"type"`
-	ID   int    `json:"id"`
+	Text string
+	Type string
+	ID   int
 }
 
 // Saved copy of the API data (a "cache"), so we don't call the API on every
-// keystroke. The mutex stops two requests from changing it at the same time.
+// search. The mutex stops two requests from changing it at the same time.
 var (
 	mutex          sync.Mutex
 	savedArtists   []Artist
@@ -29,7 +28,7 @@ var (
 	savedAt        time.Time
 )
 
-// getData returns artists and relations, from memory when possible.
+// GetData returns artists and relations, from memory when possible.
 func GetData() ([]Artist, []Relation, error) {
 	mutex.Lock()
 	defer mutex.Unlock() // "defer" = run this when the function ends
@@ -52,15 +51,15 @@ func GetData() ([]Artist, []Relation, error) {
 	return savedArtists, savedRelations, nil
 }
 
-// contains checks if text includes query, ignoring upper/lower case.
+// Contains checks if text includes query, ignoring upper/lower case.
 func Contains(text, query string) bool {
 	return strings.Contains(strings.ToLower(text), query)
 }
 
-// search returns up to 10 results that match the query.
+// Search returns up to 50 results that match the query.
 func Search(query string, artists []Artist, relations []Relation) []SearchResult {
 	query = strings.ToLower(strings.TrimSpace(query))
-	results := []SearchResult{} // empty list, so JSON gives [] and not null
+	results := []SearchResult{}
 	if query == "" {
 		return results
 	}
@@ -104,23 +103,29 @@ func Search(query string, artists []Artist, relations []Relation) []SearchResult
 		}
 	}
 
-	if len(results) > 10 { // keep the dropdown short
-		results = results[:10]
+	if len(results) > 50 { // keep the page short
+		results = results[:50]
 	}
 	return results
 }
 
-// handleSearch answers GET /api/search?q=...
+// HandleSearch answers GET /search?q=... by showing a results page.
 func HandleSearch(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		RenderError(w, http.StatusMethodNotAllowed, "405 Method Not Allowed")
 		return
 	}
 	artists, relations, err := GetData()
 	if err != nil {
-		http.Error(w, "could not load data", http.StatusInternalServerError)
+		RenderError(w, http.StatusInternalServerError, "500 Internal Server Error")
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(Search(r.URL.Query().Get("q"), artists, relations))
+
+	query := strings.TrimSpace(r.URL.Query().Get("q")) // the text after ?q=
+	data := struct {
+		Query   string
+		Results []SearchResult
+	}{query, Search(query, artists, relations)}
+
+	RenderPage(w, "search.html", data)
 }

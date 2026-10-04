@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groupie Tracker</title>
     <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/script.js" defer></script>
 </head>
 <body>
     <header>
         <h1>Groupie Tracker</h1>
         <p>Explore bands, members, concert dates, and tour locations</p>
 
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="Search artists, members, locations..." autocomplete="off">
-            <div id="search-results" class="dropdown"></div>
-        </div>
+        <form class="search-box" action="/search" method="GET">
+            <input type="text" name="q" placeholder="Search artists, members, locations..." autocomplete="off" required>
+            <button type="submit">Search</button>
+        </form>
+        <a href="/random" class="random-btn">🎲 Random Artist</a>
     </header>
 
     <main>
