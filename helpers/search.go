@@ -1,10 +1,9 @@
 package helpers
 
-// [Yasser] Search: the browser submits a form to /search?q=... and gets a results page back.
+// [Yasser] Search: search logic and in-memory cache for artists and relations.
 
 import (
 	"errors"
-	"net/http"
 	"sort"
 	"strconv"
 	"strings"
@@ -114,25 +113,4 @@ func Search(query string, artists []Artist, relations []Relation) []SearchResult
 		results = results[:50]
 	}
 	return results
-}
-
-// HandleSearch answers GET /search?q=... by showing a results page.
-func HandleSearch(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		RenderError(w, http.StatusMethodNotAllowed, "405 Method Not Allowed")
-		return
-	}
-	artists, relations, err := GetData()
-	if err != nil {
-		RenderError(w, http.StatusInternalServerError, "500 Internal Server Error")
-		return
-	}
-
-	query := strings.TrimSpace(r.URL.Query().Get("q")) // the text after ?q=
-	data := struct {
-		Query   string
-		Results []SearchResult
-	}{query, Search(query, artists, relations)}
-
-	RenderPage(w, "search.html", data)
 }
