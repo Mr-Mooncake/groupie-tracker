@@ -233,10 +233,10 @@ footer {
     transition: all 0.25s ease;
 }
 .search-results li:hover {
-    border-color: var(--border-accent);
+    border-color: var(--accent-gold);
     background: var(--bg-card-hover);
     transform: translateX(4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(229, 185, 90, 0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--accent-gold), 0 0 15px var(--accent-gold-glow);
 }
 .search-results a {
     display: block;
@@ -258,18 +258,18 @@ footer {
 .artist-card {
     display: block;
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
+    border: 2px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     overflow: hidden;
     color: var(--text-primary);
     box-shadow: var(--shadow-card);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
     position: relative;
 }
 .artist-card:hover {
     transform: translateY(-6px);
-    border-color: var(--border-accent);
-    box-shadow: var(--shadow-hover);
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 1px var(--accent-gold), var(--shadow-hover);
 }
 
 .image-wrapper {
