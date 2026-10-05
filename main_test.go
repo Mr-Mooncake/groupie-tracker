@@ -136,14 +136,14 @@ func TestHandleHome(t *testing.T) {
 
 	// Test 404 for wrong path
 	rec := httptest.NewRecorder()
-	HandleHome(rec, httptest.NewRequest(http.MethodGet, "/invalid", nil))
+	helpers.HandleHome(rec, httptest.NewRequest(http.MethodGet, "/invalid", nil))
 	if rec.Code != http.StatusNotFound {
 		t.Errorf("expected 404 for invalid path, got %d", rec.Code)
 	}
 
 	// Test 405 for POST
 	rec = httptest.NewRecorder()
-	HandleHome(rec, httptest.NewRequest(http.MethodPost, "/", nil))
+	helpers.HandleHome(rec, httptest.NewRequest(http.MethodPost, "/", nil))
 	if rec.Code != http.StatusMethodNotAllowed {
 		t.Errorf("expected 405 for POST, got %d", rec.Code)
 	}
@@ -154,28 +154,28 @@ func TestHandleArtist(t *testing.T) {
 
 	// Test 405 for POST
 	rec := httptest.NewRecorder()
-	HandleArtist(rec, httptest.NewRequest(http.MethodPost, "/artist?id=1", nil))
+	helpers.HandleArtist(rec, httptest.NewRequest(http.MethodPost, "/artist?id=1", nil))
 	if rec.Code != http.StatusMethodNotAllowed {
 		t.Errorf("expected 405 for POST, got %d", rec.Code)
 	}
 
 	// Test 400 for missing ID
 	rec = httptest.NewRecorder()
-	HandleArtist(rec, httptest.NewRequest(http.MethodGet, "/artist", nil))
+	helpers.HandleArtist(rec, httptest.NewRequest(http.MethodGet, "/artist", nil))
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for missing ID, got %d", rec.Code)
 	}
 
 	// Test 400 for invalid ID
 	rec = httptest.NewRecorder()
-	HandleArtist(rec, httptest.NewRequest(http.MethodGet, "/artist?id=abc", nil))
+	helpers.HandleArtist(rec, httptest.NewRequest(http.MethodGet, "/artist?id=abc", nil))
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for invalid ID, got %d", rec.Code)
 	}
 
 	// Test 400 for non-positive ID
 	rec = httptest.NewRecorder()
-	HandleArtist(rec, httptest.NewRequest(http.MethodGet, "/artist?id=-5", nil))
+	helpers.HandleArtist(rec, httptest.NewRequest(http.MethodGet, "/artist?id=-5", nil))
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for negative ID, got %d", rec.Code)
 	}
