@@ -4,9 +4,13 @@ package helpers
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 )
 
 // TemplatesDir is the folder with the HTML templates (tests change it).
@@ -49,4 +53,57 @@ func RenderPage(w http.ResponseWriter, name string, data any) {
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	page.WriteTo(w)
+}
+
+func HandleHome(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		RenderError(w, http.StatusNotFound, "404 Page Not Found")
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		RenderError(w, http.StatusMethodNotAllowed, "405 Method Not Allowed")
+		return
+	}
+
+	artists, err := FetchAllArtists()
+	if err != nil {
+		log.Printf("Error fetching artists: %v", err)
+		RenderError(w, http.StatusInternalServerError, "500 Internal Server Error")
+		return
+	}
+
+	RenderPage(w, "index.html", artists)
+}
+
+func HandleArtist(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		RenderError(w, http.StatusMethodNotAllowed, "405 Method Not Allowed")
+		return
+	}
+
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		RenderError(w, http.StatusBadRequest, "400 Bad Request: Missing artist ID")
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		RenderError(w, http.StatusBadRequest, "400 Bad Request: Invalid artist ID")
+		return
+	}
+
+	artistDetail, err := GetArtistDetail(id)
+	if err != nil {
+		if errors.Is(err, ErrArtistNotFound) {
+			RenderError(w, http.StatusNotFound, fmt.Sprintf("404 Artist with ID %d Not Found", id))
+			return
+		}
+		log.Printf("Error getting artist detail for ID %d: %v", id, err)
+		RenderError(w, http.StatusInternalServerError, "500 Internal Server Error")
+		return
+	}
+
+	RenderPage(w, "artist.html", artistDetail)
 }
