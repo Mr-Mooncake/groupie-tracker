@@ -51,6 +51,13 @@ func GetData() ([]Artist, []Relation, error) {
 	return savedArtists, savedRelations, nil
 }
 
+// SetCachedData sets the in-memory cache, useful for tests or offline data.
+func SetCachedData(artists []Artist, relations []Relation) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	savedArtists, savedRelations, savedAt = artists, relations, time.Now()
+}
+
 // Contains checks if text includes query, ignoring upper/lower case.
 func Contains(text, query string) bool {
 	return strings.Contains(strings.ToLower(text), query)
