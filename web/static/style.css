@@ -258,7 +258,7 @@ footer {
 .artist-card {
     display: block;
     background: var(--bg-card);
-    border: 2px solid var(--border-subtle);
+    border: 1.25px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     overflow: hidden;
     color: var(--text-primary);
