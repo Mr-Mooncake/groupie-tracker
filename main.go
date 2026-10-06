@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"groupie-tracker/helpers"
 	"log"
 	"net/http"
-
-	"groupie-tracker/helpers"
 )
 
 func main() {
